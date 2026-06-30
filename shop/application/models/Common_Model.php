@@ -22,19 +22,21 @@ class Common_Model extends MY_Model
 
     function add_hit($prId){
         self::insert($this->tables['hits'] , array(
-            'ip'=> $_SERVER['REMOTE_ADDR'],
-            'product_id'=>$prId,
+            'ip'=> isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '',
+            'product_id'=>(int)$prId,
             'time'=>time()
         ));
     }
 
     function searchResult($searchVal){
+        $searchVal = trim((string)$searchVal);
+        $like = '%'.$this->db->escape_like_str($searchVal).'%';
         $sql = "(select pr.name , pr.id , 'product' tbl_type from ".$this->tables['products']." pr
-        where pr.name LIKE '%".$searchVal."%') 
+        where pr.name LIKE ? ESCAPE '!') 
         UNION
         (select prg.name , prg.id , 'product_group' tbl_type from ".$this->tables['product_groups']." prg
-        where prg.name LIKE '%".$searchVal."%')";
-        return self::sp($sql);
+        where prg.name LIKE ? ESCAPE '!')";
+        return self::sp($sql, array($like, $like));
     }
 
 }

@@ -26,8 +26,13 @@ class Category extends SiteController
 
     
     function index($groupId){
+        $groupId = (int)$groupId;
         $products = $this->product_groups_model->selectProducts($groupId);
         $productGroupsInfo = $this->product_groups_model->getGroupInfo($groupId);
+        if(empty($productGroupsInfo)){
+            show_404();
+            return;
+        }
         for($i=0 ; $i<count($products);$i++){
             $pictures = $this->product_pictures_model->productPictures($products[$i]['id']);
             if(!empty($pictures)){
@@ -38,7 +43,7 @@ class Category extends SiteController
             }
 
         }
-        self::setTemplate("category" , array("title"=>lang("products_of_group")."  <b>".$productGroupsInfo['name']."<b>" , "products"=>$products));
+        self::setTemplate("category" , array("title"=>lang("products_of_group")."  <b>".$productGroupsInfo['name']."</b>" , "products"=>$products));
     }
 
 }

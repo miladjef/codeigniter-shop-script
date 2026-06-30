@@ -16,7 +16,7 @@ class Review extends SiteController
 
     public function index()
     {
-        if (isset($this->session->userdata['userID'])) {
+        if (session_data('userID')) {
             $userInfo = $this->customers_model->customerInfo(session_data("userID"));
             $this->setTemplate("review", array('info' => $userInfo));
         } else {
@@ -26,7 +26,7 @@ class Review extends SiteController
 
     public function verify()
     {
-        if (isset($this->session->userdata['userID'])) {
+        if (session_data('userID')) {
             $userInfo = $this->customers_model->customerInfo(session_data("userID"));
             $cartInfo = self::shopping_cart_info();
             //adding the information
@@ -42,8 +42,17 @@ class Review extends SiteController
     }
 
     public function accept(){
+        if(!session_data('userID')){
+            echo self::error(lang("please_signin_first"));
+            return;
+        }
         $data = post();
-        if($this->carts_model->insertInfo($this->carts_model->get_shopping_cart_info(session_data("shopping_cart")), $data))
+        $cart_info = $this->carts_model->get_shopping_cart_info(session_data("shopping_cart"));
+        if(empty($cart_info)){
+            echo self::error(lang("your_cart_is_empty"));
+            return;
+        }
+        if($this->carts_model->insertInfo($cart_info, $data))
             echo self::op_success();
         else
             echo self::op_error();

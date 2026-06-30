@@ -27,7 +27,8 @@ class MY_Model extends CI_Model{
             'product_pics' => 'product_pics',
             'province' => 'province',
             'shipping_methods' => 'shipping_methods',
-            'suggested_products' => 'suggested_products'
+            'suggested_products' => 'suggested_products',
+            'emails' => 'emails'
         );
     }
     
@@ -102,7 +103,8 @@ class MY_Model extends CI_Model{
      * @return array
      */
     public function getRow($table , $condition){
-        return current(self::select($table , array() , $condition));
+        $result = self::select($table , "*" , $condition);
+        return (!empty($result) && is_array($result)) ? current($result) : false;
     }
 
     /************************************* MM *******************************
@@ -112,11 +114,11 @@ class MY_Model extends CI_Model{
      * purpose: Executing Stored Procedures and running functions
      * Note: It can be used for select too when the query is written manually
      */
-    public function sp($query)
+    public function sp($query, $binds = array())
     {
         $query = str_replace("EXEC" , "" , $query);
         $query = str_replace("Execute" , "" , $query);
-        $q = $this->db->query($query);
+        $q = $this->db->query($query, $binds);
 
         if($q)
             return $q->result_array();
@@ -183,7 +185,7 @@ class MY_Model extends CI_Model{
      */
     public function isUnique($tableName , $field , $dataField){
         $result = self::select($tableName , "*" , array($field => $dataField));
-        return (!count($result)>0);
+        return (empty($result));
     }
 
     /************************************* MM *******************************
@@ -211,10 +213,14 @@ class MY_Model extends CI_Model{
      * This function is a general function for inserting data to a table and returning the inserted row
      */
     public function insert_by_return($table , $data){
-        if($this->db->insert($table , $data))
+        if($this->db->insert($table , $data)){
+            $insert_id = $this->db->insert_id();
+            if($insert_id){
+                return self::getRow($table, array('id' => $insert_id));
+            }
             return self::lastRow($table);
-        else
-            return false;
+        }
+        return false;
     }
 	
 	/************************************* MM *******************************

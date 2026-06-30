@@ -257,4 +257,5 @@ $lang['shipping_method'] = 'روش ارسال';
 $lang['total_purchase_price'] = 'قیمت کل خرید';
 $lang['number'] = 'عدد';
 $lang['suggested_products'] = 'محصولات پیشنهادی';
-$lang['the_search_result_of'] = 'نتیجه جستجوی';
+$lang['the_search_result_of'] = 'نتیجه جستجوی';$lang['please_signin_first'] = 'لطفاً ابتدا وارد حساب کاربری شوید';
+$lang['your_cart_is_empty'] = 'سبد خرید شما خالی است';

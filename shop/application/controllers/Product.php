@@ -15,8 +15,13 @@ class Product extends SiteController
     }
 
     function detail($prId){
-        $this->common_model->add_hit($prId);
+        $prId = (int)$prId;
         $productInfo = $this->products_model->getProductDetails($prId);
+        if(empty($productInfo)){
+            show_404();
+            return;
+        }
+        $this->common_model->add_hit($prId);
         $productPictures = $this->product_pictures_model->productPictures($prId);
         self::setTemplate('product_details' , array("title"=>$productInfo['name'] , "prInfo"=>$productInfo , "pics"=>$productPictures));
     }

@@ -39,8 +39,9 @@ class Products_Model extends MY_Model
         $sql = "select pr.id , pr.name , pr.description , pr.price , pr.code , mf.name manufacturer , pg.name group_name from ".$this->tables['products']." pr
         inner join ".$this->tables['manufacturers']." mf on pr.manufacturer_id = mf.id
         inner join ".$this->tables['product_groups']." pg on pr.group_id = pg.id
-        where pr.id =".$prId;
-        return current(self::sp($sql));
+        where pr.id = ?";
+        $rows = self::sp($sql, array((int)$prId));
+        return (!empty($rows)) ? current($rows) : false;
     }
 
     public function isProductExists($prId)

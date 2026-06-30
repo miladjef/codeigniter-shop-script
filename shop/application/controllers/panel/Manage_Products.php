@@ -46,7 +46,7 @@ class Manage_Products extends PanelController
             "price" => $data['price'],
             "code" => $data['code'],
             "description" => $data['description'],
-            "date_add" => time(),
+            "date_update" => time(),
             "active" => isset($data['active']) ? 1 : 0,
         );
 

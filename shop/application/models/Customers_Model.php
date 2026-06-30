@@ -16,7 +16,7 @@ class Customers_Model extends MY_Model
         return $this->insert($this->table , array(
             "name"=>$info['name'],
             "last_name"=>$info['last_name'],
-            "pass"=>crypt(md5($info['password']),"faraDars"),
+            "pass"=>password_hash($info['password'], PASSWORD_DEFAULT),
             "username"=>$info['username'],
             "province"=>$info['provinceCombo'],
             "city"=>$info['cityCombo'],
@@ -35,15 +35,31 @@ class Customers_Model extends MY_Model
     }
 
     function check_user_login($email , $password){
-        return $this->getRow($this->table , array("email"=>$email , "pass"=>crypt(md5($password),'faraDars')));
+        $user = $this->getRow($this->table , array("email"=>$email));
+        if(empty($user) || !isset($user['pass'])){
+            return false;
+        }
+
+        if(password_verify($password, $user['pass'])){
+            return $user;
+        }
+
+        // Backward compatibility with old project passwords.
+        if(hash_equals($user['pass'], crypt(md5($password),'faraDars'))){
+            $this->update($this->table, array('pass' => password_hash($password, PASSWORD_DEFAULT)), array('id' => $user['id']));
+            return $user;
+        }
+
+        return false;
     }
 
     function customerInfo($customerId){
         $sql = "select cu.* , prv.name province , cty.name city FROM ".$this->table." cu
         inner join ".$this->tables['province']." prv on cu.province = prv.id 
         inner join ".$this->tables['city']." cty on cu.city = cty.id
-        where cu.id = ".$customerId;
-        return current(self::sp($sql));
+        where cu.id = ?";
+        $rows = self::sp($sql, array((int)$customerId));
+        return (!empty($rows)) ? current($rows) : false;
     }
 
     function selectData(){

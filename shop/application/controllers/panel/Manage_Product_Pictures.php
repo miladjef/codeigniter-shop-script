@@ -67,9 +67,7 @@ class Manage_Product_Pictures extends PanelController
             "name" => $data['name'],
             "active" => isset($data['active']) ? 1 : 0,
             "group_id" => $data['productGroupsCombo'],
-            "product_id" => $data['productsCombo'],
-            "pic" => $picName,
-            "ext" => $ext
+            "product_id" => $data['productsCombo']
         );
 
         if ($picUploaded) {

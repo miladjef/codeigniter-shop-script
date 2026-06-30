@@ -32,7 +32,7 @@ class Suggestion_Model extends MY_Model
     }
     function isRowUnique($group_id , $product_id){
         $result = $this->getRow($this->table , ['group_id'=>$group_id , 'product_id'=>$product_id]);
-        return (count($result)==0 || !is_array($result));
+        return (!is_array($result) || count($result)==0);
     }
 
     function selectProducts(){
@@ -40,7 +40,10 @@ class Suggestion_Model extends MY_Model
         inner join ".$this->tables['products']." pr on sug.product_id = pr.id
         where sug.active =1";
         $result = self::sp($sql);
-        
+        if(empty($result) || !is_array($result)){
+            return array();
+        }
+
         for($i=0 ; $i<count($result); $i++){
             $pictures = self::select($this->tables['product_pics'],"*" , array("product_id"=>$result[$i]['id']));
             if(count($pictures)>0)

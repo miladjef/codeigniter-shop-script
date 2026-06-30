@@ -60,7 +60,7 @@ class PanelController extends MY_Controller
             $this->load->config('email');
             $from = array('email' => $this->settings['server_email'], 'name' => $this->settings['header_text']);
 
-            $this->email->set_newline("rn");
+            $this->email->set_newline("\r\n");
             $this->email->from($from['email'], $from['name']);
             $this->email->to(array($receiver));
 
@@ -72,15 +72,17 @@ class PanelController extends MY_Controller
             else
                 $result = true;
 
-            $this->MY_Model->insert($this->tables['emails'], array(
-                "subject" => $subject,
-                "receiver" => $receiver,
-                "message" => $message,
-                "sender" => $from['email'],
-                "result" => $result,
-                "error" => ($result == false) ? $this->email->print_debugger() : "",
-                "time" => time()
-            ));
+            if (isset($this->tables['emails']) && $this->db->table_exists($this->tables['emails'])) {
+                $this->MY_Model->insert($this->tables['emails'], array(
+                    "subject" => $subject,
+                    "receiver" => $receiver,
+                    "message" => $message,
+                    "sender" => $from['email'],
+                    "result" => $result,
+                    "error" => ($result == false) ? $this->email->print_debugger() : "",
+                    "time" => time()
+                ));
+            }
         }
     }
 

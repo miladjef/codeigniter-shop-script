@@ -14,13 +14,23 @@ class Carts_model extends MY_Model
 
     function get_shopping_cart_info($shopping_cart){
         $info = array();
+        if(!is_array($shopping_cart) || empty($shopping_cart)){
+            return $info;
+        }
+
         foreach($shopping_cart as $key =>$pr){
+            $product_id = (int)$key;
+            $quantity = max(1, (int)$pr);
 
             $prSQL = "select pr.id prId ,pr.name name , pr.price , pr.code prCode , prg.name group_name from ".$this->tables['products']." pr
                 inner join ".$this->tables['product_groups']." prg on prg.id = pr.group_id
-                where pr.id = ".$key;
-            $prInfo = current(self::sp($prSQL));
-            $prInfo['q'] = $pr;
+                where pr.id = ?";
+            $rows = self::sp($prSQL, array($product_id));
+            if(empty($rows)){
+                continue;
+            }
+            $prInfo = current($rows);
+            $prInfo['q'] = $quantity;
             $info[] = $prInfo;
         }
         return $info;
@@ -33,7 +43,8 @@ class Carts_model extends MY_Model
         $last_row = self::insert_by_return($this->table , array("products"=>json_encode($cart)));
         $total_price = 0;
         foreach ($cartInfo as $info){
-            $total_price += $info['price'];
+            $quantity = isset($info['q']) ? (int)$info['q'] : 1;
+            $total_price += ((float)$info['price'] * max(1, $quantity));
         }
         return self::insert(
             $this->tables['orders'],
@@ -47,7 +58,7 @@ class Carts_model extends MY_Model
                 'price'=> $total_price,
                 'total_price'=> $total_price,
                 'time'=>time(),
-                'shipping_method_id' =>$data['shippingCombo']
+                'shipping_method_id' =>isset($data['shippingCombo']) ? (int)$data['shippingCombo'] : 0
             )
         );
 

@@ -33,8 +33,7 @@ class Manage_Manufacturers extends PanelController
         }
         $info = array(
             "name" => $data['name'],
-            "date_add" => time(),
-            "date_update" => 0,
+            "date_update" => time(),
             "active" => isset($data['active'])?1:0,
             "logo"=>$picName,
             "ext"=>$ext
@@ -59,8 +58,7 @@ class Manage_Manufacturers extends PanelController
         }
         $info = array(
             "name" => $data['name'],
-            "date_add" => time(),
-            "date_update" => 0,
+            "date_update" => time(),
             "active" => isset($data['active'])?1:0,
         );
 

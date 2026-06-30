@@ -44,46 +44,62 @@ class MY_Controller extends CI_Controller
             'product_groups' => 'product_groups',
             'product_pics' => 'product_pics',
             'province' => 'province',
-            'shipping_methods' => 'shipping_methods'
+            'shipping_methods' => 'shipping_methods',
+            'emails' => 'emails'
         );
     }
 
 
-    public function uploadPicture($file , $picName , $destination_folder , $allowed_extensions = array("jpg" , "png" , "gif")){
+    public function uploadPicture($file , $picName , $destination_folder , $allowed_extensions = array("jpg" , "jpeg" , "png" , "gif")){
+        $uploaded = false;
+
+        if (!isset($file['name'], $file['tmp_name']) || $file['name'] == '' || !is_uploaded_file($file['tmp_name'])) {
+            return false;
+        }
+
         $a = explode("." , $file['name']);
-        $ext = end($a);
+        $ext = strtolower(end($a));
+        $allowed_extensions = array_map('strtolower', $allowed_extensions);
+
+        if(!in_array($ext , $allowed_extensions)){
+            return false;
+        }
+
+        if(!is_dir($destination_folder)){
+            @mkdir($destination_folder, 0755, true);
+        }
+
+        $temp_path = $destination_folder.$picName."_temp".".".$ext;
+        if(!move_uploaded_file($file['tmp_name'] , $temp_path )){
+            return false;
+        }
+
         $uploaded = true;
-        if(in_array($ext , $allowed_extensions)){
-            if(move_uploaded_file($file['tmp_name'] , $destination_folder.$picName."_temp".".".$ext )){
-                $config['image_library'] = 'gd2';
-                $config['source_image'] = $destination_folder.$picName."_temp".".".$ext ;
-                $config['thumb_maker'] = "";
-                $config['create_thumb'] = False;
-                $config['quality'] = '80%';
-                $config['maintain_ratio'] = True;
-                if($this->image_lib->resize()){
-                    $this->image_lib->clear();
-                    foreach($this->sizes as $size){
-                        $config['new_image'] = $destination_folder.$picName."_".$size.".".$ext;
-                        $config['width'] = $size;
-                        $this->image_lib->clear();
-                        $this->image_lib->initialize($config);
-                        if($this->image_lib->resize())
-                            continue;
-                        else
-                            $uploaded = false;
-                    }
-                    if($uploaded)
-                        unlink($destination_folder.$picName."_temp".".".$ext);
-                }
+        foreach($this->sizes as $size){
+            $config = array();
+            $config['image_library'] = 'gd2';
+            $config['source_image'] = $temp_path;
+            $config['new_image'] = $destination_folder.$picName."_".$size.".".$ext;
+            $config['create_thumb'] = FALSE;
+            $config['quality'] = '80%';
+            $config['maintain_ratio'] = TRUE;
+            $config['width'] = $size;
+
+            $this->image_lib->clear();
+            $this->image_lib->initialize($config);
+            if(!$this->image_lib->resize()){
+                $uploaded = false;
+                break;
             }
         }
-        else{
-            //echo not valid file
+
+        if(file_exists($temp_path)){
+            unlink($temp_path);
         }
+
         return $uploaded;
     }
-    
+
     function op_success(){
         return self::success(lang('operation_success'));
     }

@@ -26,14 +26,19 @@ class Cart extends SiteController
      */
     public function add2Cart($productId, $quantity = 1)
     {
+        $productId = (int)$productId;
+        $quantity = max(1, (int)$quantity);
         $shopping_cart = array();
         if ($productId != 0 && $this->products_model->isProductExists($productId)) {
-            
+
             if ($this->session->userdata('shopping_cart')) {
                 //if session exists we add new product id to our session
                 $shopping_cart = session_data('shopping_cart');
+                if(!is_array($shopping_cart)){
+                    $shopping_cart = array();
+                }
             }
-            $shopping_cart[$productId] = $quantity;
+            $shopping_cart[$productId] = isset($shopping_cart[$productId]) ? ((int)$shopping_cart[$productId] + $quantity) : $quantity;
             $this->session->set_userdata('shopping_cart', $shopping_cart);
         }
         echo true;
@@ -47,8 +52,15 @@ class Cart extends SiteController
     public function refreshCart(){
         $data = post();
         $shopping_cart = session_data("shopping_cart");
-        $shopping_cart[$data['id']] = $data['q'];
-        $this->session->set_userdata("shopping_cart", $shopping_cart);
+        if(!is_array($shopping_cart)){
+            $shopping_cart = array();
+        }
+        $id = isset($data['id']) ? (int)$data['id'] : 0;
+        $quantity = isset($data['q']) ? max(1, (int)$data['q']) : 1;
+        if($id > 0){
+            $shopping_cart[$id] = $quantity;
+            $this->session->set_userdata("shopping_cart", $shopping_cart);
+        }
         echo true;
     }
 
@@ -58,7 +70,13 @@ class Cart extends SiteController
     public function deleteCartItem(){
         $data = post();
         $shopping_cart = session_data("shopping_cart");
-        unset($shopping_cart[$data['id']]);
+        if(!is_array($shopping_cart)){
+            $shopping_cart = array();
+        }
+        $id = isset($data['id']) ? (int)$data['id'] : 0;
+        if($id > 0 && isset($shopping_cart[$id])){
+            unset($shopping_cart[$id]);
+        }
         $this->session->set_userdata("shopping_cart", $shopping_cart);
         echo true;
     }

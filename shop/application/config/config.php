@@ -14,7 +14,12 @@
 | path to your installation.
 |
 */
-$config['base_url']	= 'http://localhost/shop/';
+if (isset($_SERVER['HTTP_HOST'], $_SERVER['SCRIPT_NAME'])) {
+	$protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
+	$config['base_url'] = $protocol.'://'.$_SERVER['HTTP_HOST'].str_replace(basename($_SERVER['SCRIPT_NAME']), '', $_SERVER['SCRIPT_NAME']);
+} else {
+	$config['base_url'] = '';
+}
 
 /*
 |--------------------------------------------------------------------------
@@ -363,12 +368,13 @@ $config['proxy_ips'] = '';
  * this function is used for autoloading classes at core and third_party/MX folder
  */
 (defined('EXT')) OR define('EXT', '.php');
-function __autoload($class)
-{
-    if(strpos($class, 'CI_') !== 0)
-    {
-        @include_once( APPPATH . 'core/'. $class . EXT );
-    }
+
+if (function_exists('spl_autoload_register')) {
+    spl_autoload_register(function ($class) {
+        if (strpos($class, 'CI_') !== 0) {
+            @include_once(APPPATH . 'core/' . $class . EXT);
+        }
+    });
 }
 
 /* End of file config.php */
