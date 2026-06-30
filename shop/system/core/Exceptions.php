@@ -170,7 +170,16 @@ class CI_Exceptions {
 		else
 		{
 			set_status_header($status_code);
-			$message = '<p>'.(is_array($message) ? implode('</p><p>', $message) : $message).'</p>';
+			if (is_array($message))
+			{
+				$message = array_map('html_escape', $message);
+				$message = '<p>'.implode('</p><p>', $message).'</p>';
+			}
+			else
+			{
+				$message = '<p>'.html_escape($message).'</p>';
+			}
+			$heading = html_escape($heading);
 			$template = 'html'.DIRECTORY_SEPARATOR.$template;
 		}
 

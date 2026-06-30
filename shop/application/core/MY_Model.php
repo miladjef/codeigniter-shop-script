@@ -60,7 +60,7 @@ class MY_Model extends CI_Model{
         if(is_array($result))
             return $result;
         else
-            return $this->db->_error_message();
+            return $this->db->error()['message'];
     }
     
     /************************************* MM ******************************* 
@@ -95,7 +95,7 @@ class MY_Model extends CI_Model{
      */
     public function getTableField($table , $field , $condition = array()){
         $info = current(self::select($table , "*" , $condition));
-        return $info[$field];
+        return (is_array($info) && array_key_exists($field, $info)) ? $info[$field] : null;
     }
 	/************************************* MM *******************************
      * @param $table
@@ -228,10 +228,10 @@ class MY_Model extends CI_Model{
      * @return mixed
      * This function is a common function for running the queries related to select
      */
-    public function fetchQuery($query)
+    public function fetchQuery($query, $binds = array())
     {
-        $q = $this->db->get($query);
-        return $q->result_array();
+        $q = $this->db->query($query, $binds);
+        return $q ? $q->result_array() : array();
     }
 	 /************************************* MM *******************************
      * @param $mainTable

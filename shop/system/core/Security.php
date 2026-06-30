@@ -593,8 +593,17 @@ class CI_Security {
 			return FALSE;
 		}
 
-		// Unfortunately, none of the following PRNGs is guaranteed to exist ...
-		if (defined('MCRYPT_DEV_URANDOM') && ($output = mcrypt_create_iv($length, MCRYPT_DEV_URANDOM)) !== FALSE)
+		// Prefer PHP 7+ CSPRNG. MCrypt was removed from modern PHP versions.
+		if (function_exists('random_bytes'))
+		{
+			try
+			{
+				return random_bytes($length);
+			}
+			catch (Exception $e) {}
+		}
+
+		if (defined('MCRYPT_DEV_URANDOM') && function_exists('mcrypt_create_iv') && ($output = mcrypt_create_iv($length, MCRYPT_DEV_URANDOM)) !== FALSE)
 		{
 			return $output;
 		}

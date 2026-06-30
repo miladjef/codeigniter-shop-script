@@ -49,7 +49,7 @@ $config['index_page'] = '';
 | 'ORIG_PATH_INFO'	Uses the ORIG_PATH_INFO
 |
 */
-$config['uri_protocol']	= 'AUTO';
+$config['uri_protocol']	= 'REQUEST_URI';
 
 /*
 |--------------------------------------------------------------------------
@@ -112,6 +112,9 @@ $config['enable_hooks'] = FALSE;
 |
 */
 $config['subclass_prefix'] = 'MY_';
+
+/* Composer Autoload (available in CodeIgniter 3.1.x) */
+$config['composer_autoload'] = FALSE;
 
 
 /*
@@ -197,6 +200,8 @@ $config['log_threshold'] = 0;
 |
 */
 $config['log_path'] = '';
+$config['log_file_extension'] = '';
+$config['log_file_permissions'] = 0644;
 
 /*
 |--------------------------------------------------------------------------
@@ -249,16 +254,20 @@ $config['encryption_key'] = 'Faradars';
 | 'sess_time_to_update'		= how many seconds between CI refreshing Session Information
 |
 */
-$config['sess_cookie_name']		= 'ci_session';
-$config['sess_expiration']		= 7200;
-$config['sess_expire_on_close']	= FALSE;
-$config['sess_encrypt_cookie']	= FALSE;
-$config['sess_use_database']	= FALSE;
-$config['sess_table_name']		= 'ci_sessions';
-$config['sess_match_ip']		= FALSE;
-$config['sess_match_useragent']	= TRUE;
-$config['sess_time_to_update']	= 300;
-$config['sess_save_path'] = sys_get_temp_dir();
+$config['sess_driver'] = 'files';
+$config['sess_cookie_name'] = 'ci_session';
+$config['sess_expiration'] = 7200;
+$config['sess_save_path'] = APPPATH.'cache/sessions';
+$config['sess_match_ip'] = FALSE;
+$config['sess_time_to_update'] = 300;
+$config['sess_regenerate_destroy'] = FALSE;
+
+/* Backward compatibility for older CI code paths; CI 3.1.x uses sess_driver/sess_save_path. */
+$config['sess_expire_on_close'] = FALSE;
+$config['sess_encrypt_cookie'] = FALSE;
+$config['sess_use_database'] = FALSE;
+$config['sess_table_name'] = 'ci_sessions';
+$config['sess_match_useragent'] = TRUE;
 
 /*
 |--------------------------------------------------------------------------
@@ -275,6 +284,8 @@ $config['cookie_prefix']	= "";
 $config['cookie_domain']	= "";
 $config['cookie_path']		= "/";
 $config['cookie_secure']	= FALSE;
+$config['cookie_httponly'] = TRUE;
+$config['cookie_samesite'] = 'Lax';
 
 /*
 |--------------------------------------------------------------------------
@@ -286,6 +297,7 @@ $config['cookie_secure']	= FALSE;
 |
 */
 $config['global_xss_filtering'] = FALSE;
+$config['standardize_newlines'] = FALSE;
 
 /*
 |--------------------------------------------------------------------------
@@ -303,6 +315,8 @@ $config['csrf_protection'] = FALSE;
 $config['csrf_token_name'] = 'csrf_test_name';
 $config['csrf_cookie_name'] = 'csrf_cookie_name';
 $config['csrf_expire'] = 7200;
+$config['csrf_regenerate'] = TRUE;
+$config['csrf_exclude_uris'] = array();
 
 /*
 |--------------------------------------------------------------------------

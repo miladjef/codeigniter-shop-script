@@ -222,6 +222,11 @@ class nusoap_base {
 	*
 	* @access	public
 	*/
+	
+	function __construct(){
+		$this->nusoap_base();
+	}
+
 	function nusoap_base() {
 		$this->debugLevel = $GLOBALS['_transient']['static']['nusoap_base']['globalDebugLevel'];
 	}
@@ -1038,6 +1043,11 @@ class nusoap_fault extends nusoap_base {
     * @param string $faultstring human readable error message
     * @param mixed $faultdetail detail, typically a string or array of string
 	*/
+	
+	function __construct($faultcode,$faultactor='',$faultstring='',$faultdetail=''){
+		$this->nusoap_fault($faultcode, $faultactor, $faultstring, $faultdetail);
+	}
+
 	function nusoap_fault($faultcode,$faultactor='',$faultstring='',$faultdetail=''){
 		parent::nusoap_base();
 		$this->faultcode = $faultcode;
@@ -1131,6 +1141,11 @@ class nusoap_xmlschema extends nusoap_base  {
 	* @param	string $namespaces namespaces defined in enclosing XML
 	* @access   public
 	*/
+	
+	function __construct($schema='',$xml='',$namespaces=array()){
+		$this->nusoap_xmlschema($schema, $xml, $namespaces);
+	}
+
 	function nusoap_xmlschema($schema='',$xml='',$namespaces=array()){
 		parent::nusoap_base();
 		$this->debug('nusoap_xmlschema class instantiated, inside constructor');
@@ -2119,7 +2134,12 @@ class soapval extends nusoap_base {
 	* @param	mixed $attributes associative array of attributes to add to element serialization
 	* @access   public
 	*/
-  	function soapval($name='soapval',$type=false,$value=-1,$element_ns=false,$type_ns=false,$attributes=false) {
+  	
+	function __construct($name='soapval',$type=false,$value=-1,$element_ns=false,$type_ns=false,$attributes=false){
+		$this->soapval($name, $type, $value, $element_ns, $type_ns, $attributes);
+	}
+
+	function soapval($name='soapval',$type=false,$value=-1,$element_ns=false,$type_ns=false,$attributes=false) {
 		parent::nusoap_base();
 		$this->name = $name;
 		$this->type = $type;
@@ -2211,6 +2231,11 @@ class soap_transport_http extends nusoap_base {
 	* @param boolean $use_curl Whether to try to force cURL use
 	* @access public
 	*/
+	
+	function __construct($url, $curl_options = NULL, $use_curl = false){
+		$this->soap_transport_http($url, $curl_options, $use_curl);
+	}
+
 	function soap_transport_http($url, $curl_options = NULL, $use_curl = false){
 		parent::nusoap_base();
 		$this->debug("ctor url=$url use_curl=$use_curl curl_options:");
@@ -3628,6 +3653,11 @@ class nusoap_server extends nusoap_base {
     * @param mixed $wsdl file path or URL (string), or wsdl instance (object)
 	* @access   public
 	*/
+	
+	function __construct($wsdl=false){
+		$this->nusoap_server($wsdl);
+	}
+
 	function nusoap_server($wsdl=false){
 		parent::nusoap_base();
 		// turn on debugging?
@@ -4651,7 +4681,12 @@ class wsdl extends nusoap_base {
 	 * @param boolean $use_curl try to use cURL
      * @access public 
      */
-    function wsdl($wsdl = '',$proxyhost=false,$proxyport=false,$proxyusername=false,$proxypassword=false,$timeout=0,$response_timeout=30,$curl_options=null,$use_curl=false){
+    
+	function __construct($wsdl = '',$proxyhost=false,$proxyport=false,$proxyusername=false,$proxypassword=false,$timeout=0,$response_timeout=30,$curl_options=null,$use_curl=false){
+		$this->wsdl($wsdl, $proxyhost, $proxyport, $proxyusername, $proxypassword, $timeout, $response_timeout, $curl_options, $use_curl);
+	}
+
+	function wsdl($wsdl = '',$proxyhost=false,$proxyport=false,$proxyusername=false,$proxypassword=false,$timeout=0,$response_timeout=30,$curl_options=null,$use_curl=false){
 		parent::nusoap_base();
 		$this->debug("ctor wsdl=$wsdl timeout=$timeout response_timeout=$response_timeout");
         $this->proxyhost = $proxyhost;
@@ -6574,6 +6609,11 @@ class nusoap_parser extends nusoap_base {
 	* @param    string $decode_utf8 whether to decode UTF-8 to ISO-8859-1
 	* @access   public
 	*/
+	
+	function __construct($xml,$encoding='UTF-8',$method='',$decode_utf8=true){
+		$this->nusoap_parser($xml, $encoding, $method, $decode_utf8);
+	}
+
 	function nusoap_parser($xml,$encoding='UTF-8',$method='',$decode_utf8=true){
 		parent::nusoap_base();
 		$this->xml = $xml;
@@ -7252,6 +7292,11 @@ class nusoap_client extends nusoap_base  {
 	* @param	string $portName optional portName in WSDL document
 	* @access   public
 	*/
+	
+	function __construct($endpoint,$wsdl = false,$proxyhost = false,$proxyport = false,$proxyusername = false, $proxypassword = false, $timeout = 0, $response_timeout = 30, $portName = ''){
+		$this->nusoap_client($endpoint, $wsdl, $proxyhost, $proxyport, $proxyusername, $proxypassword, $timeout, $response_timeout, $portName);
+	}
+
 	function nusoap_client($endpoint,$wsdl = false,$proxyhost = false,$proxyport = false,$proxyusername = false, $proxypassword = false, $timeout = 0, $response_timeout = 30, $portName = ''){
 		parent::nusoap_base();
 		$this->endpoint = $endpoint;

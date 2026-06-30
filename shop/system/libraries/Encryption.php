@@ -337,7 +337,16 @@ class CI_Encryption {
 	 */
 	public function create_key($length)
 	{
-		return ($this->_driver === 'mcrypt')
+		if (function_exists('random_bytes'))
+		{
+			try
+			{
+				return random_bytes($length);
+			}
+			catch (Exception $e) {}
+		}
+
+		return ($this->_driver === 'mcrypt' && function_exists('mcrypt_create_iv'))
 			? mcrypt_create_iv($length, MCRYPT_DEV_URANDOM)
 			: openssl_random_pseudo_bytes($length);
 	}

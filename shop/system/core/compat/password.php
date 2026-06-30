@@ -116,11 +116,19 @@ if ( ! function_exists('password_hash'))
 		}
 		elseif ( ! isset($options['salt']))
 		{
-			if (defined('MCRYPT_DEV_URANDOM'))
+			if (function_exists('random_bytes'))
+			{
+				try
+				{
+					$options['salt'] = random_bytes(16);
+				}
+				catch (Exception $e) {}
+			}
+			if ( ! isset($options['salt']) && defined('MCRYPT_DEV_URANDOM') && function_exists('mcrypt_create_iv'))
 			{
 				$options['salt'] = mcrypt_create_iv(16, MCRYPT_DEV_URANDOM);
 			}
-			elseif (function_exists('openssl_random_pseudo_bytes'))
+			elseif ( ! isset($options['salt']) && function_exists('openssl_random_pseudo_bytes'))
 			{
 				$options['salt'] = openssl_random_pseudo_bytes(16);
 			}
